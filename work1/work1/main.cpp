@@ -6,6 +6,22 @@
 
 constexpr double MY_PI = 3.1415926;
 
+Eigen::Matrix4f get_rotation(Vector3f axis, float rotation_angle) {
+	float angle = rotation_angle / 180 * MY_PI;
+	Eigen::Matrix3f N = Eigen::Matrix3f::Identity();
+	N <<
+		0, -axis.z(), axis.y(),
+		axis.z(), 0, -axis.x(),
+		-axis.y(), axis.x(), 0;
+	Eigen::Matrix3f rod = std::cos(angle) * Eigen::Matrix3f::Identity() + (1 - std::cos(angle)) * axis * axis.transpose() + std::sin(angle) * N;
+	Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
+
+	model.block<3, 3>(0, 0) = rod;
+
+	return model;
+}
+
+
 Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
 {
 	Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
